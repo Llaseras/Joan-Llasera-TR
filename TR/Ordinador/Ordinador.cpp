@@ -185,83 +185,83 @@ void obtain_values(struct json_object *Link1) {
     if (json_object_get_uint64(addres1) == (uint64_t)(11)) {
 
         adreces[0] = json_object_get_uint64(addres1);
-        values[0] = (json_object_get_double(range1_1) - 50.0);
-        values[1] = (json_object_get_double(range1_2) - 50.0);
-        values[2] = (json_object_get_double(range1_3) - 50.0);
+        values[0] = (json_object_get_double(range1_1) - 0.50);
+        values[1] = (json_object_get_double(range1_2) - 0.50);
+        values[2] = (json_object_get_double(range1_3) - 0.50);
 
         if (json_object_get_uint64(addres2) == (uint64_t)(22)) {
             adreces[1] = json_object_get_uint64(addres2);
-            values[3] = (json_object_get_double(range2_1) - 50.0);
-            values[4] = (json_object_get_double(range2_2) - 50.0);
-            values[5] = (json_object_get_double(range2_3) - 50.0);
+            values[3] = (json_object_get_double(range2_1) - 0.50);
+            values[4] = (json_object_get_double(range2_2) - 0.50);
+            values[5] = (json_object_get_double(range2_3) - 0.50);
             adreces[2] = json_object_get_uint64(addres3);
-            values[6] = (json_object_get_double(range3_1) - 50.0);
-            values[7] = (json_object_get_double(range3_2) - 50.0);
-            values[8] = (json_object_get_double(range3_3) - 50.0);
+            values[6] = (json_object_get_double(range3_1) - 0.50);
+            values[7] = (json_object_get_double(range3_2) - 0.50);
+            values[8] = (json_object_get_double(range3_3) - 0.50);
 
         } else {
             adreces[1] = json_object_get_uint64(addres3);
-            values[3] = (json_object_get_double(range3_1) - 50.0);
-            values[4] = (json_object_get_double(range3_2) - 50.0);
-            values[5] = (json_object_get_double(range3_3) - 50.0);
+            values[3] = (json_object_get_double(range3_1) - 0.50);
+            values[4] = (json_object_get_double(range3_2) - 0.50);
+            values[5] = (json_object_get_double(range3_3) - 0.50);
             adreces[2] = json_object_get_uint64(addres2);
-            values[6] = (json_object_get_double(range2_1) - 50.0);
-            values[7] = (json_object_get_double(range2_2) - 50.0);
-            values[8] = (json_object_get_double(range2_3) - 50.0);
+            values[6] = (json_object_get_double(range2_1) - 0.50);
+            values[7] = (json_object_get_double(range2_2) - 0.50);
+            values[8] = (json_object_get_double(range2_3) - 0.50);
         }
     } else if (json_object_get_uint64(addres2) == (uint64_t)(11)) {
 
         adreces[0] = json_object_get_uint64(addres2);
-        values[0] = (json_object_get_double(range2_1) - 50.0);
-        values[1] = (json_object_get_double(range2_2) - 50.0);
-        values[2] = (json_object_get_double(range2_3) - 50.0);
+        values[0] = (json_object_get_double(range2_1) - 0.50);
+        values[1] = (json_object_get_double(range2_2) - 0.50);
+        values[2] = (json_object_get_double(range2_3) - 0.50);
 
         if (json_object_get_uint64(addres1) == (uint64_t)(22)) {
             adreces[1] = json_object_get_uint64(addres1);
-            values[3] = (json_object_get_double(range1_1) - 50.0);
-            values[4] = (json_object_get_double(range1_2) - 50.0);
-            values[5] = (json_object_get_double(range1_3) - 50.0);
+            values[3] = (json_object_get_double(range1_1) - 0.50);
+            values[4] = (json_object_get_double(range1_2) - 0.50);
+            values[5] = (json_object_get_double(range1_3) - 0.50);
             adreces[2] = json_object_get_uint64(addres3);
-            values[6] = (json_object_get_double(range3_1) - 50.0);
-            values[7] = (json_object_get_double(range3_2) - 50.0);
-            values[8] = (json_object_get_double(range3_3) - 50.0);
+            values[6] = (json_object_get_double(range3_1) - 0.50);
+            values[7] = (json_object_get_double(range3_2) - 0.50);
+            values[8] = (json_object_get_double(range3_3) - 0.50);
 
         } else {
             adreces[1] = json_object_get_uint64(addres3);
-            values[3] = (json_object_get_double(range3_1) - 50.0);
-            values[4] = (json_object_get_double(range3_2) - 50.0);
-            values[5] = (json_object_get_double(range3_3) - 50.0);
+            values[3] = (json_object_get_double(range3_1) - 0.50);
+            values[4] = (json_object_get_double(range3_2) - 0.50);
+            values[5] = (json_object_get_double(range3_3) - 0.50);
             adreces[2] = json_object_get_uint64(addres1);
-            values[6] = (json_object_get_double(range1_1) - 50.0);
-            values[7] = (json_object_get_double(range1_2) - 50.0);
-            values[8] = (json_object_get_double(range1_3) - 50.0);
+            values[6] = (json_object_get_double(range1_1) - 0.50);
+            values[7] = (json_object_get_double(range1_2) - 0.50);
+            values[8] = (json_object_get_double(range1_3) - 0.50);
         }
     } else {
 
         adreces[0] = json_object_get_uint64(addres3);
-        values[0] = (json_object_get_double(range3_1) - 50.0);
-        values[1] = (json_object_get_double(range3_2) - 50.0);
-        values[2] = (json_object_get_double(range3_3) - 50.0);
+        values[0] = (json_object_get_double(range3_1) - 0.50);
+        values[1] = (json_object_get_double(range3_2) - 0.50);
+        values[2] = (json_object_get_double(range3_3) - 0.50);
 
         if (json_object_get_uint64(addres1) == (uint64_t)(22)) {
             adreces[1] = json_object_get_uint64(addres1);
-            values[3] = (json_object_get_double(range1_1) - 50.0);
-            values[4] = (json_object_get_double(range1_2) - 50.0);
-            values[5] = (json_object_get_double(range1_3) - 50.0);
+            values[3] = (json_object_get_double(range1_1) - 0.50);
+            values[4] = (json_object_get_double(range1_2) - 0.50);
+            values[5] = (json_object_get_double(range1_3) - 0.50);
             adreces[2] = json_object_get_uint64(addres2);
-            values[6] = (json_object_get_double(range2_1) - 50.0);
-            values[7] = (json_object_get_double(range2_2) - 50.0);
-            values[8] = (json_object_get_double(range2_3) - 50.0);
+            values[6] = (json_object_get_double(range2_1) - 0.50);
+            values[7] = (json_object_get_double(range2_2) - 0.50);
+            values[8] = (json_object_get_double(range2_3) - 0.50);
 
         } else {
             adreces[1] = json_object_get_uint64(addres2);
-            values[3] = (json_object_get_double(range2_1) - 50.0);
-            values[4] = (json_object_get_double(range2_2) - 50.0);
-            values[5] = (json_object_get_double(range2_3) - 50.0);
+            values[3] = (json_object_get_double(range2_1) - 0.50);
+            values[4] = (json_object_get_double(range2_2) - 0.50);
+            values[5] = (json_object_get_double(range2_3) - 0.50);
             adreces[2] = json_object_get_uint64(addres1);
-            values[6] = (json_object_get_double(range1_1) - 50.0);
-            values[7] = (json_object_get_double(range1_2) - 50.0);
-            values[8] = (json_object_get_double(range1_3) - 50.0);
+            values[6] = (json_object_get_double(range1_1) - 0.50);
+            values[7] = (json_object_get_double(range1_2) - 0.50);
+            values[8] = (json_object_get_double(range1_3) - 0.50);
         }
     }
 }
