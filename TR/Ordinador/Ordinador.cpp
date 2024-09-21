@@ -40,13 +40,14 @@ SDL_Rect sitio_x, sitio_y, sitio_ancla1, sitio_ancla2, sitio_ancla3, sitio_TAG;
 // També hem de definir les globals que recolliran les coordenades de les ancles.
 // Si fiquem les ancles en una altre banda, hem de canviar aquests numeros.
 // Els valors de dins representen (x àncora 1, y àncora 1, x àncora 2...)
-float Anchor_cords[6] = {0.0, 0.0, 0.0, 10.0, 5.0, 10.0};
+float Anchor_cords[6] = {0.0, 0.0, 100.0, 0.0, 100.0, 100.0};
 
-// Deinim una variable que tindra un array amb la adreça de les tres ancles.
+// Definim una variable que tindra un array amb la adreça de les tres ancles.
 uint64_t adreces[3];
 
 // Ara definim el nom d'una altra variable amb un array que tindra dins el valor de les distancies.
-double values[9];
+// Values[0,1,2,] son per la d1, [3,4,5] son per la d2 i [6,7,8] per la d3.
+int values[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 // Ara crarem tres variables globals que emmagatzemaran el valor de x, y i z.
 double x; //La linia més facil del codi. XD
@@ -155,115 +156,28 @@ void close_program(sp_port *port) {
     SDL_Quit();
 }
 
-void obtain_values(struct json_object *Link1) {
+// Aquesta funció fara la trilateració per poder obtindre la localització del TAG
+void Trilateracion(char *buffer) {
+    // El primer de toto que hem de fer és trobar quins son els valors
+    // En aquest cas, la d sempre será igual al valor numero 3 de l'array Anchor_cords.
+    // la j sempre sera igual al valor numero 5 de l'array Anchor_cords.
+    // Per ultim la i és igual al valor numero 6 de l'array Anchor_cords.
+    float d = Anchor_cords[2];
+    float j = Anchor_cords[4];
+    float i = Anchor_cords[5];
 
-    // Aquí el que fem és craer més objectes json que després eliminarem. En aquests documents json es guardaran totes les dades que necesitarem processar.
-    struct json_object *addres1, *range1, *Link2, *addres2, *range2, *Link3, *addres3, *range3;
+    // També hem de definir els valors que són més rellevants a l'hora de fer la trilateració.
+    // Aquests valors es defineixen com la mitjana dels tres ultims valors del radi de cada ancora.
+    double r1, r2, r3;
 
-    // Ara anem a omplir tots els objectes json d'abans.
-    json_object_object_get_ex(Link1, "anchor_addr", &addres1);
-    json_object_object_get_ex(Link1, "range", &range1);
-    struct json_object *range1_1 = json_object_array_get_idx(range1, 0);
-    struct json_object *range1_2 = json_object_array_get_idx(range1, 1);
-    struct json_object *range1_3 = json_object_array_get_idx(range1, 2);
-    json_object_object_get_ex(Link1, "next", &Link2);
-    json_object_object_get_ex(Link2, "anchor_addr", &addres2);
-    json_object_object_get_ex(Link2, "range", &range2);
-    struct json_object *range2_1 = json_object_array_get_idx(range2, 0);
-    struct json_object *range2_2 = json_object_array_get_idx(range2, 1);
-    struct json_object *range2_3 = json_object_array_get_idx(range2, 2);
-    json_object_object_get_ex(Link2, "next", &Link3);
-    json_object_object_get_ex(Link3, "anchor_addr", &addres3);
-    json_object_object_get_ex(Link3, "range", &range3);
-    struct json_object *range3_1 = json_object_array_get_idx(range3, 0);
-    struct json_object *range3_2 = json_object_array_get_idx(range3, 1);
-    struct json_object *range3_3 = json_object_array_get_idx(range3, 2);
+    // Aquí el que fem és 'analitzar' el buffer en busca dels valors que volem agafar.
+    sscanf(buffer, "%*[^\n]\n%f %f %f%*[\n]", &r1,  &r2, &r3);
 
-    //Ara hem de determinar en quina direccio correspon a cada ancla. I els valors de les distancies que volem ficar.
-    // Aquesta fucnió esta feta a lo bruto, de manera que es probem totes les opcions possibles.
-    // Aquesta part de aquí és la major demostració de fer servir força bruta per trobar la solució a un problema.
-    if (json_object_get_uint64(addres1) == (uint64_t)(11)) {
-
-        adreces[0] = json_object_get_uint64(addres1);
-        values[0] = (json_object_get_double(range1_1) - 0.50);
-        values[1] = (json_object_get_double(range1_2) - 0.50);
-        values[2] = (json_object_get_double(range1_3) - 0.50);
-
-        if (json_object_get_uint64(addres2) == (uint64_t)(22)) {
-            adreces[1] = json_object_get_uint64(addres2);
-            values[3] = (json_object_get_double(range2_1) - 0.50);
-            values[4] = (json_object_get_double(range2_2) - 0.50);
-            values[5] = (json_object_get_double(range2_3) - 0.50);
-            adreces[2] = json_object_get_uint64(addres3);
-            values[6] = (json_object_get_double(range3_1) - 0.50);
-            values[7] = (json_object_get_double(range3_2) - 0.50);
-            values[8] = (json_object_get_double(range3_3) - 0.50);
-
-        } else {
-            adreces[1] = json_object_get_uint64(addres3);
-            values[3] = (json_object_get_double(range3_1) - 0.50);
-            values[4] = (json_object_get_double(range3_2) - 0.50);
-            values[5] = (json_object_get_double(range3_3) - 0.50);
-            adreces[2] = json_object_get_uint64(addres2);
-            values[6] = (json_object_get_double(range2_1) - 0.50);
-            values[7] = (json_object_get_double(range2_2) - 0.50);
-            values[8] = (json_object_get_double(range2_3) - 0.50);
-        }
-    } else if (json_object_get_uint64(addres2) == (uint64_t)(11)) {
-
-        adreces[0] = json_object_get_uint64(addres2);
-        values[0] = (json_object_get_double(range2_1) - 0.50);
-        values[1] = (json_object_get_double(range2_2) - 0.50);
-        values[2] = (json_object_get_double(range2_3) - 0.50);
-
-        if (json_object_get_uint64(addres1) == (uint64_t)(22)) {
-            adreces[1] = json_object_get_uint64(addres1);
-            values[3] = (json_object_get_double(range1_1) - 0.50);
-            values[4] = (json_object_get_double(range1_2) - 0.50);
-            values[5] = (json_object_get_double(range1_3) - 0.50);
-            adreces[2] = json_object_get_uint64(addres3);
-            values[6] = (json_object_get_double(range3_1) - 0.50);
-            values[7] = (json_object_get_double(range3_2) - 0.50);
-            values[8] = (json_object_get_double(range3_3) - 0.50);
-
-        } else {
-            adreces[1] = json_object_get_uint64(addres3);
-            values[3] = (json_object_get_double(range3_1) - 0.50);
-            values[4] = (json_object_get_double(range3_2) - 0.50);
-            values[5] = (json_object_get_double(range3_3) - 0.50);
-            adreces[2] = json_object_get_uint64(addres1);
-            values[6] = (json_object_get_double(range1_1) - 0.50);
-            values[7] = (json_object_get_double(range1_2) - 0.50);
-            values[8] = (json_object_get_double(range1_3) - 0.50);
-        }
-    } else {
-
-        adreces[0] = json_object_get_uint64(addres3);
-        values[0] = (json_object_get_double(range3_1) - 0.50);
-        values[1] = (json_object_get_double(range3_2) - 0.50);
-        values[2] = (json_object_get_double(range3_3) - 0.50);
-
-        if (json_object_get_uint64(addres1) == (uint64_t)(22)) {
-            adreces[1] = json_object_get_uint64(addres1);
-            values[3] = (json_object_get_double(range1_1) - 0.50);
-            values[4] = (json_object_get_double(range1_2) - 0.50);
-            values[5] = (json_object_get_double(range1_3) - 0.50);
-            adreces[2] = json_object_get_uint64(addres2);
-            values[6] = (json_object_get_double(range2_1) - 0.50);
-            values[7] = (json_object_get_double(range2_2) - 0.50);
-            values[8] = (json_object_get_double(range2_3) - 0.50);
-
-        } else {
-            adreces[1] = json_object_get_uint64(addres2);
-            values[3] = (json_object_get_double(range2_1) - 0.50);
-            values[4] = (json_object_get_double(range2_2) - 0.50);
-            values[5] = (json_object_get_double(range2_3) - 0.50);
-            adreces[2] = json_object_get_uint64(addres1);
-            values[6] = (json_object_get_double(range1_1) - 0.50);
-            values[7] = (json_object_get_double(range1_2) - 0.50);
-            values[8] = (json_object_get_double(range1_3) - 0.50);
-        }
-    }
+    // Ara anem a obtenir la posició del Tag.
+    // Per obtenir la posició del Tag, el que hem de fer, és fer servir, les aquacions de la trilateració. Que per cert, estan al Marc Teoric del meu TR.
+    x = ((r1 * r1) - (r2 * r2) + (d * d)) / (2 * d);
+    y = (((r1 * r1) - (r3 * r3) + (i * i) + (j * j)) / (2 * j)) - ((i / j) * x);
+    z = sqrt(((r1 * r1) - (x * x) - (y * y)));
 }
 
 // Una funció que ens donará la posició de les anclas.
@@ -275,20 +189,20 @@ void Anchors_get_position() {
     Ancla_3 = IMG_LoadTexture(renderitzador, "Objectes/Ancla3.jpg");
 
     // Posicio Ancla 1
-    sitio_ancla1.x = (int)(Anchor_cords[0] * 40) + 20;
-    sitio_ancla1.y = (int)(Anchor_cords[1] * 40) + 70;
+    sitio_ancla1.x = (int)(Anchor_cords[0] * 1) + 20;
+    sitio_ancla1.y = (int)(Anchor_cords[1] * 1) + 70;
     sitio_ancla1.w = 40;
     sitio_ancla1.h = 40;
 
     // Posicio Ancla 2
-    sitio_ancla2.x = (int)(Anchor_cords[2] * 40) + 20;
-    sitio_ancla2.y = (int)(Anchor_cords[3] * 40) + 70;
+    sitio_ancla2.x = (int)(Anchor_cords[2] * 1) + 20;
+    sitio_ancla2.y = (int)(Anchor_cords[3] * 1) + 70;
     sitio_ancla2.w = 40;
     sitio_ancla2.h = 40;
 
     // Posicio Ancla 3
-    sitio_ancla3.x = (int)(Anchor_cords[4] * 40) + 20;
-    sitio_ancla3.y = (int)(Anchor_cords[5] * 40) + 70;
+    sitio_ancla3.x = (int)(Anchor_cords[4] * 1) + 20;
+    sitio_ancla3.y = (int)(Anchor_cords[5] * 1) + 70;
     sitio_ancla3.w = 40;
     sitio_ancla3.h = 40;
 
@@ -299,29 +213,6 @@ void Anchors_get_position() {
     // Pero el que si que podem fer és definir que tan gran será la foto del TAG
     sitio_TAG.w = 30;
     sitio_TAG.h = 30;
-}
-
-// Aquesta funció fara la trilateració per poder obtindre la localització del TAG
-void Trilateración() {
-    // El primer de toto que hem de fer és trobar quins son els valors
-    // En aquest cas, la d sempre será igual al valor numero 3 de l'array Anchor_cords.
-    // la j sempre sera igual al valor numero 5 de l'array Anchor_cords.
-    // Per ultim la i és igual al valor numero 6 de l'array Anchor_cords.
-    float d = Anchor_cords[2];
-    float j = Anchor_cords[4];
-    float i = Anchor_cords[5];
-
-    // També hem de definir els valors que són més rellevants a l'hora de fer la trilateració.
-    // Aquests valors es defineixen com la mitjana dels tres ultims valors del radi de cada ancora.
-    double r1 = (values[0] + values[1] + values[2]) / 3;
-    double r2 = (values[3] + values[4] + values[5]) / 3;
-    double r3 = (values[6] + values[7] + values[8]) / 3;
-
-    // Ara anem a obtenir la posició del Tag.
-    // Per obtenir la posició del Tag, el que hem de fer, és fer servir, les aquacions de la trilateració. Que per cert, estan al Marc Teoric del meu TR.
-    x = ((r1 * r1) - (r2 * r2) + (d * d)) / (2 * d);
-    y = (((r1 * r1) - (r3 * r3) + (i * i) + (j * j)) / (2 * j)) - ((i / j) * x);
-    z = sqrt(((r1 * r1) - (x * x) - (y * y)));
 }
 
 void mostrar_valores(int numero) {
@@ -374,8 +265,8 @@ void mostrar_valores(int numero) {
     // Ara farem que la posició del TAG només s'imprimeixi en cas de que tinguem informació de la seva posició.
     if (numero == 1) {
         // Ara per utlim he de determinar la posicio on estará el nostre TAG.
-        sitio_TAG.x = (int)(x * 40) + 20;
-        sitio_TAG.y = (int)(y * 40) + 70;
+        sitio_TAG.x = (int)(x * 1) + 20;
+        sitio_TAG.y = (int)(y * 1) + 70;
 
         // Ara per ultim he de afegir la textura del tag en la posicio corresponent.
         SDL_RenderCopy(renderitzador, TAG, NULL, &sitio_TAG);
@@ -383,16 +274,16 @@ void mostrar_valores(int numero) {
 
     // Ara crearem una textura que només es mostrara en cas de que el document json no s'estigui llegint.
     if (numero == 0) {
-        SDL_Surface* superficie_error_json = TTF_RenderText_Solid(fuente, "No se esta recibiendo ningun elemento por el puerto Serial", color);
-        SDL_Texture* ERROR_Json = SDL_CreateTextureFromSurface(renderitzador, superficie_error_json);
-        SDL_Rect Sitio_ERROR_Json;
-        Sitio_ERROR_Json.x = 20;
-        Sitio_ERROR_Json.y = 735;
-        Sitio_ERROR_Json.w = superficie_error_json->w;
-        Sitio_ERROR_Json.h = superficie_error_json->h;
-        SDL_FreeSurface(superficie_error_json);
-        SDL_RenderCopy(renderitzador, ERROR_Json, NULL, &Sitio_ERROR_Json);
-        SDL_DestroyTexture(ERROR_Json);
+        SDL_Surface* superficie_error_buffer = TTF_RenderText_Solid(fuente, "No se esta recibiendo ningun elemento por el puerto Serial", color);
+        SDL_Texture* ERROR_buffer = SDL_CreateTextureFromSurface(renderitzador, superficie_error_buffer);
+        SDL_Rect Sitio_ERROR_buffer;
+        Sitio_ERROR_buffer.x = 20;
+        Sitio_ERROR_buffer.y = 735;
+        Sitio_ERROR_buffer.w = superficie_error_buffer->w;
+        Sitio_ERROR_buffer.h = superficie_error_buffer->h;
+        SDL_FreeSurface(superficie_error_buffer);
+        SDL_RenderCopy(renderitzador, ERROR_buffer, NULL, &Sitio_ERROR_buffer);
+        SDL_DestroyTexture(ERROR_buffer);
     }
 
     // Ara per ultim, el que fem, es imprimir tot en pantalla.
@@ -403,8 +294,8 @@ void mostrar_valores(int numero) {
 // En aquesta funció hi ha un argument anomenat port que te la structura sp_port.
 void read_from_serial(struct sp_port *port) {
 
-    // Es crea un Buffer(cadena de caracters) del tamany del Json enviat.
-    char buffer[Tamany_del_buffer];
+    // Es crea un Buffer on es guardaran els caracters que vinguin per el port serial.
+    char buffer[100];
 
     // Es crea una variable amb el nom n.
     int n;
@@ -430,38 +321,20 @@ void read_from_serial(struct sp_port *port) {
         // A la variable n anteriorment guardada se li asigna el numero de bytes que la funció sp_nonblocking_read ha llegit.
         // Les dades que ha llegit la funció es llegeixen desde el port on està conectat la funció, es guarden al buffer abans creat.
         // I per últim Buffer_Size - 1 és el tamany maxim de dades que es poden emmagatzemar. El -1 per poder ficar al final del buffer un valor NULL.
-        n = sp_nonblocking_read(port, buffer, Tamany_del_buffer - 1);
+        
+
+        n = sp_nonblocking_read(port, buffer, 99);
 
         // Aquasta part d'aqui del codi només funciona en cas de que s'hagin registrat dades.
-        if (n < 0) {
+        if (n > 0) {
 
-            // Aquesta part d'aqui es que fa és afegir un valor NULL just després de l'ultim valor del buffer.
-            buffer[n] = '\0';
+            // Ara anem a fer la trilateració de les dades obtingudes per saber on està el nostre TAG.
+            Trilateracion(buffer);
 
-            // Es crea una variable parsed_json que té la estructura de json_object
-            struct json_object *parsed_json;
-
-            // Agafa la cadena buffer on estava el document JSON serialitzat i la converteix en un objecte JSON.
-            // L'objecte JSON es guarda dins de la variable parsed_json
-            parsed_json = json_tokener_parse(buffer);
+            // Aquí fem servir una variable que mostara tots el valors.                
+            mostrar_valores(1);
 
 
-            // Si el que es rebeix per el port serial no es un JSON o si el JSON frebut no està bén fet, s'imprimeix un error i imprimeix en pantalla el que s'ha rebut.
-            if (parsed_json == NULL) {
-                fprintf(stderr, "%s\n", buffer);
-                error_exit("El JSON recibido no estaba bien estructurado.");
-            } else {
-                // Anem a aconseguir els valors de dins del json.
-                obtain_values(parsed_json);
-
-                // Ara anem a fer la trilateració de les dades obtingudes per saber on està el nostre TAG.
-
-                // Aquí fem servir una variable que mostara tots el valors.                
-                mostrar_valores(1);
-
-                // Allibera la part de memoria que parsed_json estaba fent servint
-                json_object_put(parsed_json);
-            }
         } else if (n < 0) {
             // Això s'executa en cas de que no es llegeixi res desde el port USB on esta el ESP32 connectat.
             error_exit("Error reading from serial port");
@@ -469,7 +342,7 @@ void read_from_serial(struct sp_port *port) {
             mostrar_valores(0);
         }
 
-        // Si s'executa SDL_PollEvet continuará
+        // Si s'executa SDL_PollEvent continuará
         if (SDL_PollEvent(&evento)) {
 
             // Si el tipus de event que ha retornat és igual a SDL_QUIT.
@@ -502,7 +375,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Reaprofitem la variable error que ja no necessitarem l'anterior valor.
     // A la variable error se li asigno el valor depenent de si la comunicació per el port USB s'inicia correctament.
     // es fa servir la funció sp_open() per iniciar la comunicació. I es fica que vol que fagi la comunicació. Si llegir, escriure o ambdues.
-    error = sp_open(port, SP_MODE_READ);
+    error = sp_open(port, SP_MODE_READ_WRITE);
 
     // En cas de que no s'hagi iniciat correctament la comunicació, s'imprimeix l'error i s'aturen tots els procesos.
     if (error != SP_OK) {
@@ -517,6 +390,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (error != SP_OK) {
         error_exit("No s'ha pogut indicar una freqüencia.");
     }
+
+    sp_set_bits(port, 8);
+    sp_set_parity(port, SP_PARITY_NONE);
+    sp_set_stopbits(port, 1);
+    sp_set_flowcontrol(port, SP_FLOWCONTROL_NONE);
 
     // Iniciem una funció que crea una finestra i ens retorna la informació de la finestra creada.
     start_window();
